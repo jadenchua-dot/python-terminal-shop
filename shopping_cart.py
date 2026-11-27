@@ -51,33 +51,23 @@ def display_categories():
         print(f"{i}. {keys}")
         i += 1
 
+###===============Print one category of the menu==========###
+def print_category(category):
+    print(f"\n----------- {category.upper()} -----------")
+    for code, details in menu[category].items():
+        print(f"{code}: {details['name']:25} ${details['price']:.2f}")
+
+
 ###===============To view menu ==========###
 def view_menu():
+    categories = list(menu.keys())
     while True:
         display_cat_for_view()
         cat = input('\nEnter a number to choose category (type "q" to return to main menu): ').lower()
         if cat == "q":
             break
-        elif cat == "1":
-            print("-----------BURGERS-----------")
-            for code, details in menu["Burgers"].items():
-                print(f"{code}: {details["name"]:25}: ${details["price"]:.2f}")
-        elif cat == "2":
-            print("\n-----------SIDES-----------")
-            for code, details in menu["Sides"].items():
-                print(f"{code}: {details["name"]:25}: ${details["price"]:.2f}")
-        elif cat == "3":
-            print("\n-----------DRINKS-----------")
-            for code, details in menu["Drinks"].items():
-                print(f"{code}: {details["name"]:25}: ${details["price"]:.2f}")
-        elif cat == "4":
-            print("\n-----------DESSERTS-----------")
-            for code, details in menu["Desserts"].items():
-                print(f"{code}: {details["name"]:25}: ${details["price"]:.2f}")
-        elif cat == "5":
-            print("\n-----------COMBOS-----------")
-            for code, details in menu["Combos"].items():
-                print(f"{code}: {details["name"]:25}: ${details["price"]:.2f}")
+        elif cat.isdigit() and 1 <= int(cat) <= len(categories):
+            print_category(categories[int(cat) - 1])
         else:
             print("\nPlease enter a valid category.")
 
@@ -104,7 +94,14 @@ def item(category):
         else:
             print("Enter a valid quantity!")
     price = menu[category][order]["price"]
-    shopping_cart.append({"code": order,"name": label, "price": price, "qty": qty})
+    # Ordering the same item again adds to its existing line, so the cart
+    # never shows the same code twice (editing by code would only find the first)
+    for line in shopping_cart:
+        if line["code"] == order:
+            line["qty"] += qty
+            break
+    else:
+        shopping_cart.append({"code": order,"name": label, "price": price, "qty": qty})
     print(f"\n{qty}x {label} has been added to the cart!")
     print('\n\n\n\n\n')
 
@@ -123,9 +120,7 @@ def choose_cat():
             category_name=list(menu.keys())
             if 0 <= number < len(category_name):
                 selected_cat = category_name[number]
-                print(f"\n----------- {selected_cat.upper()} -----------")
-                for code, details in menu[selected_cat].items():
-                    print(f"{code}: {details['name']:25} ${details['price']:.2f}")
+                print_category(selected_cat)
                 item(selected_cat)
             else:
                 print("Invalid category number. Try again.")
@@ -145,7 +140,7 @@ def for_cart():
     for item in shopping_cart:
         cost = item["price"] * item["qty"]
         total += cost
-        toformat=f"({item["qty"]}x) {item["code"]} | {item["name"]:40} | ${cost:.2f}"
+        toformat=f"({item['qty']}x) {item['code']} | {item['name']:40} | ${cost:.2f}"
         print(f"{toformat:^150}")
     toformat=f"(Total Before GST/Discounts): ${total:.2f}"
     print("\n" + f'{toformat:^150}')
@@ -178,7 +173,7 @@ def for_editing_cart():
                             for_cart()
                         break
                     else:
-                        print("Quantity must be a positive integer.")
+                        print("Enter a whole number (0 removes the item).")
                 break
         else:
             print("Item code not found in cart, please enter a valid item code.")
@@ -266,7 +261,7 @@ def lucky_draw():
 def check_out(total):
     discounted=0
     print("\n-------TYPE OF DISCOUNT-------")
-    print(f"{"TYPE:":>8}{"DISCOUNT:":>22}")
+    print(f"{'TYPE:':>8}{'DISCOUNT:':>22}")
     print(f"1. Student{student:>15}%")
     print(f"2. Staff{Staff:>16}%")
     print(f"3. Loyalty Member{Loyalty_members:>7}%")
@@ -380,4 +375,5 @@ def final():
 
 
 ###==== To call the function====###
-final()
+if __name__ == "__main__":
+    final()
