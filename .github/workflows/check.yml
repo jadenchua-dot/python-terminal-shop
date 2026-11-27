@@ -1,0 +1,35 @@
+# Runs a scripted order through the shop on every supported Python version,
+# so a syntax or logic slip shows up here instead of on someone's laptop.
+name: Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  order:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Compile
+        run: python -m py_compile shopping_cart.py
+      - name: Place a test order
+        # View drinks, order 2 + 1 Classic Beef Burgers (one cart line, 3x),
+        # check out with the student discount, skip the lucky draw, exit.
+        run: |
+          printf '2\n3\nq\n1\n1\nB01\n2\n1\nb01\n1\nq\n3\n3\nyes\n1\nyes\nno\n4\n' | python shopping_cart.py > out.txt
+          cat out.txt
+          grep -q '(3x) B01' out.txt
+          grep -Eq 'Final Payable Amount: +\$16\.19' out.txt
