@@ -15,7 +15,7 @@ A command-line ordering app for a fast food counter, written in plain Python 3. 
 
 ## Run it
 
-Needs Python 3.9 or newer. No packages to install.
+Needs Python 3.10 or newer. No packages to install.
 
 ```bash
 git clone https://github.com/jadenchua-dot/python-terminal-shop.git
@@ -62,4 +62,4 @@ The menu is one nested dictionary at the top of `shopping_cart.py`, so adding an
 
 ## Tests
 
-GitHub Actions places a scripted order on Python 3.9 to 3.13 on every push and checks the cart and the final amount ([workflow](.github/workflows/check.yml)).
+GitHub Actions places a scripted order on Python 3.10 to 3.13 on every push and checks the cart and the final amount ([workflow](.github/workflows/check.yml)).
